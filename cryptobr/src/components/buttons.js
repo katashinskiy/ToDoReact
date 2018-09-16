@@ -25,7 +25,7 @@ const styles = theme => ({
 function AppButton(props) {
     const {classes} = props;
     return (
-        <Fragment key={"AppButton"}>
+        <Fragment >
 
             <Button variant="contained" color="primary" className={classes.button}
                     onClick={(e) => props.PopoverConfig(e.currentTarget)}

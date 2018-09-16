@@ -113,6 +113,96 @@ class MiniDrawer extends React.Component {
         this.setState({open: false});
     };
 
+    deleteItem = () => {
+        let array = this.state.ItemsList.filter(i => !i.checked);
+
+        this.setState({
+            ItemsList: array,
+            isSnackBarOpen: true,
+            SnackBarText: 'One elem was delete !'
+        });
+    };
+
+    popoverConfig = (popover) => {
+        this.setState({
+            popoverElement: popover,
+            isPopoverOpen: true
+        })
+    };
+
+    openModal = () => {
+        this.setState({
+            isModalOpen: true
+        })
+    };
+
+    closeModal = () => {
+        this.setState({
+            isModalOpen: false
+        })
+    };
+
+    closePopover = () => {
+        this.setState({
+            isPopoverOpen: false
+        })
+    };
+
+    editElementToDo = (newElement) => {
+        let newListItem = this.state.ItemsList.map((elem) => {
+            if(elem.checked === true){
+                return newElement;
+            }
+            return elem;
+        });
+
+        this.setState({
+            ItemsList: newListItem,
+            isPopoverOpen: false,
+            isSnackBarOpen: true,
+            SnackBarText: 'One elem was edit !'
+        });
+    };
+
+    checkedElement = (checked, index) => {
+        let list = [...this.state.ItemsList];
+        list[index].checked = checked;
+        this.setState({
+            ItemsList: list
+        });
+
+        let CheckedElem = list.filter(elem => elem.checked);
+
+        if (CheckedElem.length === 1) {
+            this.setState({
+                title: CheckedElem[0].title,
+                value: CheckedElem[0].value
+            });
+        }
+    };
+
+    itemsChecked = () => this.state.ItemsList.filter(elem => elem.checked);
+
+    closeSnackbar =() => {
+        setTimeout(() => {
+            this.setState({
+                isSnackBarOpen: false
+            })
+        }, 500)
+    };
+
+    addElementToToDO = (elem) => {
+        this.setState({
+            ItemsList: [...this.state.ItemsList,
+                elem
+            ],
+            isPopoverOpen: false,
+            isModalOpen: false,
+            isSnackBarOpen: true,
+            SnackBarText: 'New elem was added !'
+        });
+    };
+
     render() {
         const {classes, theme} = this.props;
 
@@ -121,7 +211,6 @@ class MiniDrawer extends React.Component {
                 <AppBar
                     position="fixed"
                     className={classNames(classes.appBar, this.state.open && classes.appBarShift)}
-                    S
                 >
                     <Toolbar disableGutters={!this.state.open}>
                         <IconButton
@@ -159,35 +248,16 @@ class MiniDrawer extends React.Component {
                     <div className="container">
                         <Typography noWrap>
                             <AppButton
-                                itemsChecked={() => this.state.ItemsList.filter(elem => elem.checked)}
-                                PopoverConfig={(popover) => this.setState({
-                                    popoverElement: popover,
-                                    isPopoverOpen: true
-                                })}
-                                DeleteItem={() => {
-
-                                    let array = this.state.ItemsList.filter(i => !i.checked);
-
-                                    this.setState({
-                                        ItemsList: array,
-                                        isSnackBarOpen: true,
-                                        SnackBarText: 'One elem was delete !'
-                                    })
-
-                                }}
-                                openModal={() => this.setState({
-                                    isModalOpen: true
-                                })}
+                                itemsChecked={this.itemsChecked}
+                                PopoverConfig={this.popoverConfig}
+                                DeleteItem={this.deleteItem}
+                                openModal={this.openModal}
                             />
                             <Popover
                                 id="render-props-popover"
                                 open={this.state.isPopoverOpen}
                                 anchorEl={this.state.popoverElement}
-                                onClose={() => {
-                                    this.setState({
-                                        isPopoverOpen: false
-                                    })
-                                }}
+                                onClose={this.closePopover}
                                 anchorOrigin={{
                                     vertical: 'bottom',
                                     horizontal: 'center',
@@ -205,50 +275,19 @@ class MiniDrawer extends React.Component {
                                             value: this.state.value
                                         })}
 
-                                        editElement={(newElem) => {
-                                            let newListItem = this.state.ItemsList.map((elem) => {
-                                                if(elem.checked === true){
-                                                    return newElem;
-                                                }
-                                                return elem;
-                                            });
-
-                                            this.setState({
-                                                ItemsList: newListItem,
-                                                isPopoverOpen: false,
-                                                isSnackBarOpen: true,
-                                                SnackBarText: 'One elem was edit !'
-                                            });
-                                        }}
+                                        editElement={this.editElementToDo}
                                     />
                                 </Typography>
                             </Popover>
                             <AppList
                                 items={this.state.ItemsList}
-                                onChecked={(checked, index) => {
-                                    let list = [...this.state.ItemsList];
-                                    list[index].checked = checked;
-                                    this.setState({
-                                        ItemsList: list
-                                    });
-
-                                    let CheckedElem = list.filter(elem => elem.checked);
-
-                                    if (CheckedElem.length === 1) {
-                                        this.setState({
-                                            title: CheckedElem[0].title,
-                                            value: CheckedElem[0].value
-                                        });
-                                    }
-                                }}
+                                onChecked={this.checkedElement}
                             />
                         </Typography>
                         <Dialog
                             // fullScreen={fullScreen}
                             open={this.state.isModalOpen}
-                            onClose={() => this.setState({
-                                isModalOpen: false
-                            })}
+                            onClose={this.closeModal}
                             aria-labelledby="responsive-dialog-title"
                         >
                             <DialogTitle id="responsive-dialog-title">{"Add new line to ToDo"}</DialogTitle>
@@ -257,19 +296,7 @@ class MiniDrawer extends React.Component {
                                     Please add new element to your list
                                 </DialogContentText>
                                 <AppForm
-                                    addElem={(elem) => {
-                                        this.setState({
-                                            ItemsList: [...this.state.ItemsList,
-                                                elem
-                                            ],
-                                            isPopoverOpen: false,
-                                            isModalOpen: false,
-                                            isSnackBarOpen: true,
-                                            SnackBarText: 'New elem was added !'
-                                        });
-
-                                        // this.handleClick(TransitionDown);
-                                    }}
+                                    addElem={this.addElementToToDO}
                                 />
                             </DialogContent>
                             <DialogActions>
@@ -277,14 +304,8 @@ class MiniDrawer extends React.Component {
                         </Dialog>
                         <Snackbar
                             open={this.state.isSnackBarOpen}
-                            onClose={() => {
-                                setTimeout(() => {
-                                    this.setState({
-                                        isSnackBarOpen: false
-                                    })
-                                }, 500)
-                            }}
-                            TransitionComponent={this.state.Transition}
+                            onClose={this.closeSnackbar}
+                            // TransitionComponent={this.state.Transition}
                             ContentProps={{
                                 'aria-describedby': 'message-id',
                             }}

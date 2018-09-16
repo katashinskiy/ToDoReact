@@ -33,16 +33,16 @@ class AppForm extends React.Component {
             errors: {
                 title: '',
                 value: ''
-            }
+            },
         }
     }
 
-    editMessage() {
+    editElementToDo() {
         let errors = {};
 
-        if (!this.state.title) errors.title = "Input title !";
+        if (!this.state.title) errors.title = "Edit title !";
 
-        if (!this.state.value) errors.value = "Input value !";
+        if (!this.state.value) errors.value = "Edit value !";
 
         if (errors.title || errors.value) {
             this.setState({
@@ -79,7 +79,7 @@ class AppForm extends React.Component {
                     label={this.state.errors.title || "Title"}
                     placeholder="Input title"
                     className={classes.textField}
-                    error={this.state.errors.title}
+                    error={this.state.title === ''}
                     margin="normal"
                     onChange={(event) => {
                         this.setState({
@@ -96,7 +96,7 @@ class AppForm extends React.Component {
                     label={this.state.errors.value || "Value"}
                     placeholder="Input value"
                     className={classes.textField}
-                    error={this.state.errors.value}
+                    error={this.state.value === ''}
                     margin="normal"
                     onChange={(event) => {
                         this.setState({
@@ -110,7 +110,7 @@ class AppForm extends React.Component {
                 />
                 <Button style={{position: "absolute", right: "20px", bottom: "15px" }} variant="contained" color="primary"
                         className={classes.button}
-                        onClick={() => this.editMessage()} // that don't lost context(this)
+                        onClick={() => this.editElementToDo()} // that don't lost context(this)
                 >
                     Save
                     <Icon className={classes.rightIcon} >save</Icon>

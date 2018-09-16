@@ -246,7 +246,6 @@ class MiniDrawer extends React.Component {
                 <main className={classes.content}>
                     <div className={classes.toolbar}/>
                     <div className="container">
-                        <Typography noWrap>
                             <AppButton
                                 itemsChecked={this.itemsChecked}
                                 PopoverConfig={this.popoverConfig}
@@ -268,7 +267,7 @@ class MiniDrawer extends React.Component {
                                 }}
 
                             >
-                                <Typography style={{width: 400, padding: "15px 30px"}}>
+                                <div style={{width: 400, padding: "15px 30px"}}>
                                     <AppFormEdit
                                         EditData={() => ({
                                             title: this.state.title,
@@ -277,13 +276,12 @@ class MiniDrawer extends React.Component {
 
                                         editElement={this.editElementToDo}
                                     />
-                                </Typography>
+                                </div>
                             </Popover>
                             <AppList
                                 items={this.state.ItemsList}
                                 onChecked={this.checkedElement}
                             />
-                        </Typography>
                         <Dialog
                             // fullScreen={fullScreen}
                             open={this.state.isModalOpen}

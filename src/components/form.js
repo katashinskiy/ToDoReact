@@ -80,7 +80,7 @@ class AppForm extends React.Component {
                     className={classes.textField}
                     // value={this.state.name}
                     // onChange={this.handleChange('name')}
-                    error={this.state.title === ''}
+                    error={Boolean(this.state.errors.title)}
                     margin="normal"
                     onChange={(event) => {
                         this.setState({
@@ -98,7 +98,7 @@ class AppForm extends React.Component {
                     className={classes.textField}
                     // value={this.state.name}
                     // onChange={this.handleChange('name')}
-                    error={this.state.value === ''}
+                    error={Boolean(this.state.errors.value)}
                     margin="normal"
                     onChange={(event) => {
                         this.setState({

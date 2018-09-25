@@ -1,22 +1,26 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
-import {AppBar, Divider, Drawer, IconButton, List, Toolbar, Typography} from '@material-ui/core';
-import {ChevronLeft, ChevronRight, Menu} from '@material-ui/icons';
-import {mailFolderListItems, otherMailFolderListItems} from './sourse/tileData';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classNames from 'classnames'
+import {withStyles} from '@material-ui/core/styles'
+import {AppBar, Divider, Drawer, IconButton, List, Toolbar, Typography} from '@material-ui/core'
+import {ChevronLeft, ChevronRight, Menu} from '@material-ui/icons'
+import {mailFolderListItems, otherMailFolderListItems} from './sourse/tileData'
 import AppButton from './buttons'
-import {AppList} from "./list";
-import Popover from '@material-ui/core/Popover';
+import {AppList} from "./list"
+import Popover from '@material-ui/core/Popover'
 import AppForm from "./form"
 import AppFormEdit from "./editForm"
-import Dialog from "@material-ui/core/es/Dialog/Dialog";
-import DialogTitle from "@material-ui/core/es/DialogTitle/DialogTitle";
-import DialogContentText from "@material-ui/core/es/DialogContentText/DialogContentText";
-import DialogContent from "@material-ui/core/es/DialogContent/DialogContent";
-import DialogActions from "@material-ui/core/es/DialogActions/DialogActions";
-import Snackbar from '@material-ui/core/Snackbar';
-
+import Dialog from "@material-ui/core/es/Dialog/Dialog"
+import DialogTitle from "@material-ui/core/es/DialogTitle/DialogTitle"
+import DialogContentText from "@material-ui/core/es/DialogContentText/DialogContentText"
+import DialogContent from "@material-ui/core/es/DialogContent/DialogContent"
+import DialogActions from "@material-ui/core/es/DialogActions/DialogActions"
+import Snackbar from '@material-ui/core/Snackbar'
+import {connect} from "react-redux"
+import editChecked from "../ActionCreator/checkedEdit"
+import deleteToDo from "../ActionCreator/deleteToDo"
+import addToDo from "../ActionCreator/addToDo"
+import editToDo from "../ActionCreator/editToDo"
 
 const drawerWidth = 240;
 
@@ -94,12 +98,6 @@ class MiniDrawer extends React.Component {
         isModalOpen: false,
         isSnackBarOpen: false,
         SnackBarText: '',
-        ItemsList: [
-            {value: "Elem 1", title: "about Elem 1", checked: false},
-            {value: "Elem 2", title: "about Elem 2", checked: false},
-            {value: "Elem 3", title: "about Elem 3", checked: false},
-            {value: "Elem 4", title: "about Elem 4", checked: false}
-        ],
         title: '111',
         value: '222'
 
@@ -114,10 +112,12 @@ class MiniDrawer extends React.Component {
     };
 
     deleteItem = () => {
-        let array = this.state.ItemsList.filter(i => !i.checked);
+
+        const {deleteToDo} = this.props;
+
+        deleteToDo();
 
         this.setState({
-            ItemsList: array,
             isSnackBarOpen: true,
             SnackBarText: 'One elem was delete !'
         });
@@ -149,15 +149,12 @@ class MiniDrawer extends React.Component {
     };
 
     editElementToDo = (newElement) => {
-        let newListItem = this.state.ItemsList.map((elem) => {
-            if(elem.checked === true){
-                return newElement;
-            }
-            return elem;
-        });
+
+        const {editToDo} = this.props;
+
+        editToDo(newElement.value, newElement.title, newElement.checked);
 
         this.setState({
-            ItemsList: newListItem,
             isPopoverOpen: false,
             isSnackBarOpen: true,
             SnackBarText: 'One elem was edit !'
@@ -165,13 +162,12 @@ class MiniDrawer extends React.Component {
     };
 
     checkedElement = (checked, index) => {
-        let list = [...this.state.ItemsList];
-        list[index].checked = checked;
-        this.setState({
-            ItemsList: list
-        });
+        const {editChecked, ItemsList} = this.props;
+        editChecked(checked, index);
 
-        let CheckedElem = list.filter(elem => elem.checked);
+
+        // =======================================        Code for edit element ToDo
+        let CheckedElem = ItemsList.filter(elem => elem.checked);
 
         if (CheckedElem.length === 1) {
             this.setState({
@@ -181,9 +177,12 @@ class MiniDrawer extends React.Component {
         }
     };
 
-    itemsChecked = () => this.state.ItemsList.filter(elem => elem.checked);
+    itemsChecked = () => {
+        return this.props.ItemsList.filter(elem => elem.checked)
 
-    closeSnackbar =() => {
+    };
+
+    closeSnackbar = () => {
         setTimeout(() => {
             this.setState({
                 isSnackBarOpen: false
@@ -192,10 +191,12 @@ class MiniDrawer extends React.Component {
     };
 
     addElementToToDO = (elem) => {
+
+        const {addToDo} = this.props;
+
+        addToDo(elem.value, elem.title, elem.checked);
+
         this.setState({
-            ItemsList: [...this.state.ItemsList,
-                elem
-            ],
             isPopoverOpen: false,
             isModalOpen: false,
             isSnackBarOpen: true,
@@ -246,42 +247,42 @@ class MiniDrawer extends React.Component {
                 <main className={classes.content}>
                     <div className={classes.toolbar}/>
                     <div className="container">
-                            <AppButton
-                                itemsChecked={this.itemsChecked}
-                                PopoverConfig={this.popoverConfig}
-                                DeleteItem={this.deleteItem}
-                                openModal={this.openModal}
-                            />
-                            <Popover
-                                id="render-props-popover"
-                                open={this.state.isPopoverOpen}
-                                anchorEl={this.state.popoverElement}
-                                onClose={this.closePopover}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'center',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'center',
-                                }}
+                        <AppButton
+                            itemsChecked={this.itemsChecked}
+                            PopoverConfig={this.popoverConfig}
+                            DeleteItem={this.deleteItem}
+                            openModal={this.openModal}
+                        />
+                        <Popover
+                            id="render-props-popover"
+                            open={this.state.isPopoverOpen}
+                            anchorEl={this.state.popoverElement}
+                            onClose={this.closePopover}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'center',
+                            }}
 
-                            >
-                                <div style={{width: 400, padding: "15px 30px"}}>
-                                    <AppFormEdit
-                                        EditData={() => ({
-                                            title: this.state.title,
-                                            value: this.state.value
-                                        })}
+                        >
+                            <div style={{width: 400, padding: "15px 30px"}}>
+                                <AppFormEdit
+                                    EditData={() => ({
+                                        title: this.state.title,
+                                        value: this.state.value
+                                    })}
 
-                                        editElement={this.editElementToDo}
-                                    />
-                                </div>
-                            </Popover>
-                            <AppList
-                                items={this.state.ItemsList}
-                                onChecked={this.checkedElement}
-                            />
+                                    editElement={this.editElementToDo}
+                                />
+                            </div>
+                        </Popover>
+                        <AppList
+                            items={this.props.ItemsList}
+                            onChecked={this.checkedElement}
+                        />
                         <Dialog
                             // fullScreen={fullScreen}
                             open={this.state.isModalOpen}
@@ -321,5 +322,7 @@ MiniDrawer.propTypes = {
     theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, {withTheme: true})(MiniDrawer);
+export default withStyles(styles, {withTheme: true})(connect(state => ({
+    ItemsList: state.arrayToDo
+}), {editChecked, deleteToDo, addToDo, editToDo})(MiniDrawer));
 

@@ -55,7 +55,7 @@ class AppForm extends React.Component {
         this.props.editElement({
             value: this.state.value,
             title: this.state.title,
-            checked: false
+            checked: true
         });
 
         this.setState({
@@ -113,7 +113,7 @@ class AppForm extends React.Component {
                         onClick={() => this.editElementToDo()} // that don't lost context(this)
                 >
                     Save
-                    <Icon className={classes.rightIcon} >save</Icon>
+                    <Icon className={classes.rightIcon}>save</Icon>
                 </Button>
             </Fragment>
         )

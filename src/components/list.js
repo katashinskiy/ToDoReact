@@ -11,7 +11,7 @@ export const AppList = (props) => {
                     return (<Fragment key={index}>
                         <ListItem button>
                             <Checkbox
-                                onChange={(e, bool) => props.onChecked(bool, index)}
+                                onChange={(e, bool) =>  props.onChecked(bool, index) }
                                 checked={item.checked}
                             />
                             <ListItemText primary={item.value} secondary={item.title}/>
